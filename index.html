@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evidence SKLADOVKY</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        /* Přidejte tyto styly do existujícího CSS bloku */
+
+/* Zmenšení mezer mezi řádky v tabulkách */
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+tr {
+    line-height: 1.1;  /* Snížení výšky řádku */
+}
+
+td, th {
+    padding: 2px 5px;  /* Snížení vertikálního paddingu */
+    vertical-align: middle;
+}
+
+/* Zmenšení vstupních polí */
+input, textarea {
+    padding: 2px;
+    margin: 0;
+    box-sizing: border-box;
+    line-height: 1.1;
+    min-height: 22px;
+}
+
+/* Nastavení výšky textarea */
+textarea.poznamka-input {
+    height: 22px;
+    resize: vertical;
+    overflow: hidden;
+}
+
+/* Zmenšení mezer mezi tabulkami */
+.add-row-container {
+    margin: 10px 0;
+}
+
+/* Zmenšení mezer kolem "VYROBIT" kontejneru */
+.vyrobit-container {
+    padding: 5px;
+    margin: 10px 0;
+}
+
+/* Zmenšení mezer kolem nadpisů */
+h1, h2 {
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        
+        #import-btn {
+             background-color: #009688;
+        }
+
+        #import-btn:hover {
+              background-color: #00796b;
+        }
+        
+        #zakazka-nadpis {
+            font-weight: bold;
+            text-align: center;
+            font-size: 14px;
+            background-color: #f2f2f2;
+            border: none;
+        }
+        
+        button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .delete-btn {
+            background-color: #f44336;
+        }
+        
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .add-row-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .total-row {
+            font-weight: bold;
+            background-color: #f2f2f2;
+        }
+        
+        .number-input {
+            text-align: right;
+        }
+        
+        .readonly {
+            background-color: #f5f5f5;
+        }
+        
+        .vyrobit-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #e9f7ef;
+            border: 1px solid #d5e8d4;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .vyrobit-label {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .vyrobit-value {
+            font-weight: bold;
+            font-size: 18px;
+            color: #2e7d32;
+        }
+        
+        .negative {
+            color: #c62828;
+        }
+        
+        .status-message {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            border-radius: 3px;
+            display: none;
+        }
+        
+        .toolbar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .toolbar button {
+            margin: 5px;
+        }
+        
+        #export-btn {
+            background-color: #2196F3;
+        }
+        
+        #export-btn:hover {
+            background-color: #0b7dda;
+        }
+        
+        #delete-btn {
+            background-color: #f44336;
+        }
+        
+        #delete-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        #print-btn {
+            background-color: #ff9800;
+        }
+        
+        #print-btn:hover {
+            background-color: #e68a00;
+        }
+        
+        #export-dialog {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .dialog-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 400px;
+            max-width: 90%;
+        }
+        
+        .dialog-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+        @media print {
+    /* Základní nastavení tisku */
+    .no-print, h1, h2 {
+        display: none !important;
+    }
+    
+    body, .container {
+        margin: 0;
+        padding: 0;
+        background: white;
+        box-shadow: none;
+    }
+    
+    /* Rozložení tabulek vedle sebe */
+    .print-layout {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        padding: 0;
+        margin: 0;
+    }
+    
+    /* Rozložení tabulek vedle sebe */
+    .print-layout {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+    }
+    
+    /* První div (tabulka zakázek) bude mít fixní šířku */
+    .print-layout > div:first-child {
+        width: 200px;
+        flex-shrink: 0;
+    }
+    
+    /* Druhý div (hlavní tabulka) zabere zbytek místa */
+    .print-layout > div:last-child {
+        flex: 1;
+        min-width: 0;  /* Důležité pro správné chování flexboxu */
+    }
+
+    /* Zajištění, že hlavní tabulka vyplní celý prostor */
+    #hlavni-tabulka {
+        width: 100% !important;
+        table-layout: auto !important;
+    }
+    
+    /* Kompletní reset všech ohraničení */
+    table, tr, td, th {
+        border: none !important;
+        border-collapse: collapse;
+        padding: 3px 5px;
+        font-size: 10pt;
+    }
+    
+    /* Aplikace pouze vertikálních ohraničení */
+    td, th {
+        border-right: 1px solid #ddd !important;
+    }
+    
+    /* První buňka v řádku nepotřebuje levé ohraničení */
+    tr td:first-child, tr th:first-child {
+        border-left: 1px solid #ddd !important;
+    }
+    
+    /* Minimální ohraničení pro hlavičku a patičku tabulky */
+    thead tr {
+        border-bottom: 1px solid #ddd !important;
+    }
+    
+    tfoot tr {
+        border-top: 1px solid #ddd !important;
+    }
+    
+    /* Odstranění pozadí a ohraničení pro "VYROBIT" kontejner */
+    .vyrobit-container {
+        border: none !important;
+        background: none !important;
+        padding: 5px 0;
+        margin: 5px 0;
+    }
+    
+    /* Odstranění všech přechodů a stínů */
+    * {
+        box-shadow: none !important;
+        transition: none !important;
+    }
+    
+    /* Odstranění dalších stylových prvků */
+    .total-row {
+        background: none !important;
+        font-weight: bold;
+    }
+    
+    /* Zmenšení mezer */
+    table {
+        margin-bottom: 5px;
+    }
+    
+    input, textarea {
+        border: none !important;
+        background: none !important;
+        padding: 0 !important;
+    }
+/* Nastavení fixní šířky tabulky */
+table {
+        width: auto !important;
+        table-layout: fixed !important;
+    }
+
+    /* Úprava šířky prvních dvou sloupců */
+    table th:nth-child(1),
+    table td:nth-child(1) {
+        width: 90px !important;
+        max-width: 90px !important;
+    }
+
+    table th:nth-child(2),
+    table td:nth-child(2) {
+        width: 90px !important;
+        max-width: 90px !important;
+    }
+
+    /* Zabránění přetečení textu */
+    table th:nth-child(1),
+    table td:nth-child(1),
+    table th:nth-child(2),
+    table td:nth-child(2) {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+        /* Úprava šířek sloupců pro hlavní tabulku */
+        #hlavni-tabulka th:nth-child(1),
+    #hlavni-tabulka td:nth-child(1) {
+        width: 880px !important;  /* TAVBA */
+    }
+
+    #hlavni-tabulka th:nth-child(2),
+    #hlavni-tabulka td:nth-child(2) {
+        width: 60px !important;  /* VÁHA */
+    }
+
+    #hlavni-tabulka th:nth-child(3),
+    #hlavni-tabulka td:nth-child(3) {
+        width: 50px !important;  /* KUSY */
+    }
+
+    #hlavni-tabulka th:nth-child(4),
+    #hlavni-tabulka td:nth-child(4) {
+        width: 70px !important;  /* MÍSTO */
+    }
+
+    #hlavni-tabulka th:nth-child(5),
+    #hlavni-tabulka td:nth-child(5) {
+        width: 80px !important;  /* SOUČET VÁHY */
+    }
+
+    #hlavni-tabulka th:nth-child(6),
+    #hlavni-tabulka td:nth-child(6) {
+        width: 80px !important;  /* SOUČET KUSŮ */
+    }
+
+    #hlavni-tabulka th:nth-child(7),
+    #hlavni-tabulka td:nth-child(7) {
+        width: 120px !important;  /* POZNÁMKA */
+    }
+
+    /* Zabránění přetečení textu */
+    #hlavni-tabulka td,
+    #hlavni-tabulka th {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> Evidence SKLADOVKY</h1>
+        
+        <!-- Status message -->
+        <div id="status-message" class="status-message"></div>
+        
+        <!-- Toolbar -->
+        <div class="toolbar no-print">
+    <button id="export-btn">Uložit do souboru</button>
+    <button id="import-btn">Načíst ze souboru</button>
+    <input type="file" id="import-file" accept=".json" style="display: none">
+    <button id="delete-btn">Vymazat vše</button>
+    <button id="print-btn">Tisknout</button>
+</div>
+        
+        <div class="print-layout">
+            <div>
+                <!-- První tabulka - Zakázky -->
+                <h2>Zakázky</h2>
+                <table id="tabulka-zakazky">
+                    <thead>
+                        <tr>
+                            <th><input type="text" id="zakazka-nadpis" placeholder="SKLADOVKA" value="SKLADOVKA"></th>
+                            <th>HODNOTA</th>
+                            <th class="no-print">AKCE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="zakazky-body">
+                        <!-- Zde budou dynamicky vložené řádky -->
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td>CELKEM:</td>
+                            <td id="zakazky-celkem">0</td>
+                            <td class="no-print"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <div class="add-row-container no-print">
+                    <button id="pridat-zakazku">Přidat zakázku</button>
+                </div>
+            </div>
+            
+            <div>
+                <!-- Řádek pro zobrazení rozdílu "VYROBIT" -->
+                <div class="vyrobit-container">
+                    <span class="vyrobit-label">VYROBIT:</span>
+                    <span id="vyrobit-hodnota" class="vyrobit-value">0</span>
+                </div>
+                
+                <!-- Druhá tabulka - Hlavní tabulka -->
+                <h2>Hlavní tabulka</h2>
+                <table id="hlavni-tabulka">
+                    <thead>
+                        <tr>
+                            <th>TAVBA</th>
+                            <th>VÁHA</th>
+                            <th>KUSY</th>
+                            <th>MÍSTO</th>
+                            <th>SOUČET VÁHY</th>
+                            <th>SOUČET KUSŮ</th>
+                            <th>POZNÁMKA</th>
+                            <th class="no-print">AKCE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hlavni-body">
+                        <!-- Zde budou dynamicky vložené řádky -->
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td>CELKEM:</td>
+                            <td id="celkem-vaha-vstup">0</td>
+                            <td id="celkem-kusy-vstup">0</td>
+                            <td></td>
+                            <td id="celkem-vaha-soucet">0</td>
+                            <td id="celkem-kusy-soucet">0</td>
+                            <td></td>
+                            <td class="no-print"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <div class="add-row-container no-print">
+                    <button id="pridat-hlavni">Přidat řádek</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dialog pro export do souboru -->
+    <div id="export-dialog">
+        <div class="dialog-content">
+            <h3>Uložit data do souboru</h3>
+            <p>Zadejte volitelný popisek souboru:</p>
+            <input type="text" id="export-filename" placeholder="Volitelný popisek">
+            <div class="dialog-buttons">
+                <button id="export-cancel">Zrušit</button>
+                <button id="export-confirm">Uložit</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Konstanta pro klíč v localStorage
+        const STORAGE_KEY = 'dynamicke_tabulky_data';
+        
+        // Pomocné funkce
+        function $(id) {
+            return document.getElementById(id);
+        }
+        
+        let zakazkyPocet = 0;
+        let hlavniPocet = 0;
+        let ticheUlozeni = false;
+        
+        // Funkce pro kontrolu nadpisu zakázky
+        function kontrolaNadpisuZakazky() {
+            const nadpisInput = $('zakazka-nadpis');
+            if (!nadpisInput.value.trim()) {
+                nadpisInput.value = "SKLADOVKA";
+            }
+            ulozitDoLocalStorage();
+        }
+        
+        // Funkce pro zobrazení statusu
+        function zobrazitStatus(zprava) {
+            const statusElement = $('status-message');
+            statusElement.textContent = zprava;
+            statusElement.style.display = 'block';
+            
+            // Automatické skrytí po 3 sekundách
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Funkce pro uložení do localStorage
+        function ulozitDoLocalStorage() {
+            if (ticheUlozeni) return;
+            
+            try {
+                const data = ziskatData();
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                zobrazitStatus('Data byla automaticky uložena.');
+            } catch (error) {
+                console.error('Chyba při ukládání do localStorage:', error);
+            }
+        }
+        
+        // Funkce pro načtení z localStorage
+        function nacistZLocalStorage() {
+            try {
+                const ulozenaData = localStorage.getItem(STORAGE_KEY);
+                if (ulozenaData) {
+                    const data = JSON.parse(ulozenaData);
+                    naplnitData(data);
+                    zobrazitStatus('Data byla načtena z úložiště.');
+                }
+            } catch (error) {
+                console.error('Chyba při načítání z localStorage:', error);
+            }
+        }
+        
+        // Funkce pro získání všech dat
+        function ziskatData() {
+            const data = {
+                zakazkaNadpis: $('zakazka-nadpis').value,
+                zakazky: [],
+                hlavniTabulka: [],
+                timestamp: new Date().toISOString()
+            };
+            
+            // Získání dat z tabulky zakázek
+            document.querySelectorAll('#zakazky-body tr').forEach(tr => {
+                const zakazkaText = tr.querySelector('.zakazka-text')?.value || '';
+                const zakazkaHodnota = parseFloat(tr.querySelector('.zakazka-hodnota')?.value) || 0;
+                
+                data.zakazky.push({
+                    text: zakazkaText,
+                    hodnota: zakazkaHodnota
+                });
+            });
+            
+            // Získání dat z hlavní tabulky
+            document.querySelectorAll('#hlavni-body tr').forEach(tr => {
+                const tavba = tr.querySelector('.tavba-input')?.value || '';
+                const vaha = parseFloat(tr.querySelector('.vaha-input')?.value) || 0;
+                const kusy = parseInt(tr.querySelector('.kusy-input')?.value) || 0;
+                const misto = tr.querySelector('.misto-input')?.value || '';
+                const soucetVaha = parseFloat(tr.querySelector('.soucet-vaha-input')?.value) || 0;
+                const soucetKusy = parseInt(tr.querySelector('.soucet-kusy-input')?.value) || 0;
+                const poznamka = tr.querySelector('.poznamka-input')?.value || '';
+                
+                data.hlavniTabulka.push({
+                    tavba: tavba,
+                    vaha: vaha,
+                    kusy: kusy,
+                    misto: misto,
+                    soucetVaha: soucetVaha,
+                    soucetKusy: soucetKusy,
+                    poznamka: poznamka
+                });
+            });
+            
+            return data;
+        }
+        
+        // Funkce pro naplnění dat do tabulek
+        function naplnitData(data) {
+            ticheUlozeni = true;
+            
+            // Naplnění nadpisu zakázky
+            if (data.zakazkaNadpis) {
+                $('zakazka-nadpis').value = data.zakazkaNadpis;
+            }
+            
+            // Vyčištění stávajících tabulek
+            $('zakazky-body').innerHTML = '';
+            $('hlavni-body').innerHTML = '';
+            zakazkyPocet = 0;
+            hlavniPocet = 0;
+            
+            // Naplnění tabulky zakázek
+            if (data.zakazky && data.zakazky.length > 0) {
+                data.zakazky.forEach(zakazka => {
+                    const tbody = $('zakazky-body');
+                    const tr = document.createElement('tr');
+                    tr.id = 'zakazka-' + zakazkyPocet;
+                    
+                    tr.innerHTML = `
+    <td><input type="text" maxlength="10" class="zakazka-text" placeholder="Zadejte zakázku" value="${zakazka.text || ''}"></td>
+    <td><input type="number" class="zakazka-hodnota number-input" value="${zakazka.hodnota || 0}" min="0" max="9999999999" oninput="if(this.value.length > 10) this.value = this.value.slice(0, 10)"></td>
+    <td class="no-print"><button class="delete-btn" onclick="smazatZakazku(${zakazkyPocet})">Smazat</button></td>
+`;
+                    
+                    tbody.appendChild(tr);
+                    
+                    // Přidáme event listenery pro přepočet
+                    const hodnotaInput = tr.querySelector('.zakazka-hodnota');
+                    hodnotaInput.addEventListener('input', function() {
+                        prepocetZakazek();
+                        prepocetVyrobit();
+                        ulozitDoLocalStorage();
+                    });
+                    
+                    const textInput = tr.querySelector('.zakazka-text');
+                    textInput.addEventListener('input', ulozitDoLocalStorage);
+                    
+                    zakazkyPocet++;
+                });
+            } else {
+                // Pokud nejsou žádná data, přidáme jeden výchozí řádek
+                pridatZakazku();
+            }
+            
+            // Naplnění hlavní tabulky
+            if (data.hlavniTabulka && data.hlavniTabulka.length > 0) {
+                data.hlavniTabulka.forEach(radek => {
+                    const tbody = $('hlavni-body');
+                    const tr = document.createElement('tr');
+                    tr.id = 'hlavni-' + hlavniPocet;
+                    
+                    tr.innerHTML = `
+                        <td><input type="text" class="tavba-input" placeholder="Tavba" value="${radek.tavba || ''}"></td>
+                        <td><input type="number" class="vaha-input number-input" value="${radek.vaha || 0}"></td>
+                        <td><input type="number" class="kusy-input number-input" value="${radek.kusy || 0}"></td>
+                        <td><input type="text" class="misto-input" placeholder="Místo" value="${radek.misto || ''}"></td>
+                        <td><input type="number" class="soucet-vaha-input number-input readonly" readonly value="${radek.soucetVaha || 0}"></td>
+                        <td><input type="number" class="soucet-kusy-input number-input readonly" readonly value="${radek.soucetKusy || 0}"></td>
+                        <td><textarea class="poznamka-input" placeholder="Poznámka">${radek.poznamka || ''}</textarea></td>
+                        <td class="no-print"><button class="delete-btn" onclick="smazatHlavniRadek(${hlavniPocet})">Smazat</button></td>
+                    `;
+                    
+                    tbody.appendChild(tr);
+                    
+                    // Přidáme event listenery pro přepočet
+                    const vahaInput = tr.querySelector('.vaha-input');
+                    const kusyInput = tr.querySelector('.kusy-input');
+                    const mistoInput = tr.querySelector('.misto-input');
+                    const poznamkaInput = tr.querySelector('.poznamka-input');
+                    const tavbaInput = tr.querySelector('.tavba-input');
+                    
+                    vahaInput.addEventListener('input', function() {
+                        prepocetHlavni();
+                        prepocetVyrobit();
+                        ulozitDoLocalStorage();
+                    });
+                    
+                    kusyInput.addEventListener('input', function() {
+                        prepocetHlavni();
+                        prepocetVyrobit();
+                        ulozitDoLocalStorage();
+                    });
+                    
+                    [mistoInput, poznamkaInput, tavbaInput].forEach(input => {
+                        input.addEventListener('input', ulozitDoLocalStorage);
+                    });
+                    
+                    hlavniPocet++;
+                });
+            } else {
+                // Pokud nejsou žádná data, přidáme jeden výchozí řádek
+                pridatHlavniRadek();
+            }
+            
+            // Přepočet součtů
+            prepocetZakazek();
+            prepocetHlavni();
+            prepocetVyrobit();
+            
+            ticheUlozeni = false;
+        }
+        
+        // Funkce pro přidání zakázky
+        function pridatZakazku() {
+            const tbody = $('zakazky-body');
+            const tr = document.createElement('tr');
+            tr.id = 'zakazka-' + zakazkyPocet;
+            
+            tr.innerHTML = `
+                <td><input type="text" maxlength="10" class="zakazka-text" placeholder="Zadejte zakázku"></td>
+                <td><input type="number" class="zakazka-hodnota number-input" value="0"></td>
+                <td class="no-print"><button class="delete-btn" onclick="smazatZakazku(${zakazkyPocet})">Smazat</button></td>
+            `;
+            
+            tbody.appendChild(tr);
+            
+            // Přidáme event listenery pro přepočet
+            const hodnotaInput = tr.querySelector('.zakazka-hodnota');
+            hodnotaInput.addEventListener('input', function() {
+                prepocetZakazek();
+                prepocetVyrobit();
+                ulozitDoLocalStorage();
+            });
+            
+            const textInput = tr.querySelector('.zakazka-text');
+            textInput.addEventListener('input', ulozitDoLocalStorage);
+            
+            zakazkyPocet++;
+            prepocetZakazek();
+            prepocetVyrobit();
+            
+            if (!ticheUlozeni) {
+                ulozitDoLocalStorage();
+            }
+        }
+        
+        // Funkce pro smazání zakázky
+        function smazatZakazku(id) {
+            const radek = $('zakazka-' + id);
+            if (radek) {
+                radek.remove();
+                prepocetZakazek();
+                prepocetVyrobit();
+                ulozitDoLocalStorage();
+            }
+        }
+        
+        // Funkce pro přepočet součtu hodnot zakázek
+        function prepocetZakazek() {
+            const hodnotyInputs = document.querySelectorAll('.zakazka-hodnota');
+            let suma = 0;
+            
+            hodnotyInputs.forEach(input => {
+                const hodnota = parseFloat(input.value) || 0;
+                suma += hodnota;
+            });
+            
+            $('zakazky-celkem').textContent = suma;
+        }
+        
+        // Funkce pro přidání řádku do hlavní tabulky
+        function pridatHlavniRadek() {
+            const tbody = $('hlavni-body');
+            const tr = document.createElement('tr');
+            tr.id = 'hlavni-' + hlavniPocet;
+            
+            tr.innerHTML = `
+                <td><input type="text" class="tavba-input" placeholder="Tavba"></td>
+                <td><input type="number" class="vaha-input number-input" value="0"></td>
+                <td><input type="number" class="kusy-input number-input" value="0"></td>
+                <td><input type="text" class="misto-input" placeholder="Místo"></td>
+                <td><input type="number" class="soucet-vaha-input number-input readonly" readonly></td>
+                <td><input type="number" class="soucet-kusy-input number-input readonly" readonly></td>
+                <td><textarea class="poznamka-input" placeholder="Poznámka"></textarea></td>
+                <td class="no-print"><button class="delete-btn" onclick="smazatHlavniRadek(${hlavniPocet})">Smazat</button></td>
+            `;
+            
+            tbody.appendChild(tr);
+            
+            // Přidáme event listenery pro přepočet
+            const vahaInput = tr.querySelector('.vaha-input');
+            const kusyInput = tr.querySelector('.kusy-input');
+            const mistoInput = tr.querySelector('.misto-input');
+            const poznamkaInput = tr.querySelector('.poznamka-input');
+            const tavbaInput = tr.querySelector('.tavba-input');
+            
+            vahaInput.addEventListener('input', function() {
+                prepocetHlavni();
+                prepocetVyrobit();
+                ulozitDoLocalStorage();
+            });
+            
+            kusyInput.addEventListener('input', function() {
+                prepocetHlavni();
+                prepocetVyrobit();
+                ulozitDoLocalStorage();
+            });
+            
+            [mistoInput, poznamkaInput, tavbaInput].forEach(input => {
+                input.addEventListener('input', ulozitDoLocalStorage);
+            });
+            
+            hlavniPocet++;
+            prepocetHlavni();
+            prepocetVyrobit();
+            
+            if (!ticheUlozeni) {
+                ulozitDoLocalStorage();
+            }
+        }
+        
+        // Funkce pro smazání řádku z hlavní tabulky
+        function smazatHlavniRadek(id) {
+            const radek = $('hlavni-' + id);
+            if (radek) {
+                radek.remove();
+                prepocetHlavni();
+                prepocetVyrobit();
+                ulozitDoLocalStorage();
+            }
+        }
+        
+        // Funkce pro přepočet součtů v hlavní tabulce
+        function prepocetHlavni() {
+            const radky = document.querySelectorAll('#hlavni-body tr');
+            let celkemVaha = 0;
+            let celkemKusy = 0;
+            let kumulativniVaha = 0;
+            let kumulativniKusy = 0;
+            
+            radky.forEach((radek) => {
+                const vahaInput = radek.querySelector('.vaha-input');
+                const kusyInput = radek.querySelector('.kusy-input');
+                const soucetVahaInput = radek.querySelector('.soucet-vaha-input');
+                const soucetKusyInput = radek.querySelector('.soucet-kusy-input');
+                
+                if (vahaInput && kusyInput) {
+                    const vaha = parseFloat(vahaInput.value) || 0;
+                    const kusy = parseInt(kusyInput.value) || 0;
+                    
+                    celkemVaha += vaha;
+                    celkemKusy += kusy;
+                    
+                    kumulativniVaha += vaha;
+                    kumulativniKusy += kusy;
+                    
+                    soucetVahaInput.value = kumulativniVaha;
+                    soucetKusyInput.value = kumulativniKusy;
+                }
+            });
+            
+            // Aktualizace součtů v patičce
+            $('celkem-vaha-vstup').textContent = celkemVaha;
+            $('celkem-kusy-vstup').textContent = celkemKusy;
+            $('celkem-vaha-soucet').textContent = kumulativniVaha;
+            $('celkem-kusy-soucet').textContent = kumulativniKusy;
+        }
+        
+        // Funkce pro přepočet hodnoty "VYROBIT" (rozdíl mezi zakázkami a výrobou)
+        function prepocetVyrobit() {
+            const celkemZakazky = parseFloat($('zakazky-celkem').textContent) || 0;
+            const celkemVaha = parseFloat($('celkem-vaha-vstup').textContent) || 0;
+            
+            const rozdil = celkemZakazky - celkemVaha;
+            
+            const vyrobitElement = $('vyrobit-hodnota');
+            vyrobitElement.textContent = rozdil;
+            
+            // Přidání vizuální indikace (červená pro záporné hodnoty)
+            if (rozdil < 0) {
+                vyrobitElement.classList.add('negative');
+            } else {
+                vyrobitElement.classList.remove('negative');
+            }
+        }
+        
+        // Funkce pro export do JSON souboru
+        function ulozitDoSouboru() {
+            const data = ziskatData();
+            const popisek = $('export-filename').value.trim();
+            
+            let nazevSouboru = $('zakazka-nadpis').value.trim() || 'SKLADOVKA';
+            if (popisek) {
+                nazevSouboru += '_' + popisek;
+            }
+            
+            // Přidání časové značky
+            const datum = new Date();
+            const casZnacka = datum.getFullYear() + 
+                ('0' + (datum.getMonth() + 1)).slice(-2) + 
+                ('0' + datum.getDate()).slice(-2) + '_' + 
+                ('0' + datum.getHours()).slice(-2) + 
+                ('0' + datum.getMinutes()).slice(-2);
+            
+            nazevSouboru += '_' + casZnacka + '.json';
+            
+            // Vytvoření a stažení souboru
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nazevSouboru;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            zobrazitStatus('Data byla uložena do souboru: ' + nazevSouboru);
+            
+            // Zavření dialogu
+            $('export-dialog').style.display = 'none';
+        }
+        
+        // Funkce pro vymazání všech dat
+        function vymazatVse() {
+            if (confirm('Opravdu chcete vymazat všechna data? Tato akce je nevratná.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                $('zakazky-body').innerHTML = '';
+                $('hlavni-body').innerHTML = '';
+                $('zakazka-nadpis').value = 'SKLADOVKA';
+                zakazkyPocet = 0;
+                hlavniPocet = 0;
+                
+                // Přidáme výchozí řádky
+                pridatZakazku();
+                pridatHlavniRadek();
+                
+                zobrazitStatus('Všechna data byla vymazána.');
+            }
+        }
+        
+        // Funkce pro tisk
+        function tiskFormulare() {
+            window.print();
+        }
+        
+        // Inicializace - načtení dat a přidání event listenerů
+        document.addEventListener('DOMContentLoaded', function() {
+            // Načtení dat z localStorage
+            nacistZLocalStorage();
+            // Event listener pro načtení ze souboru
+$('import-btn').addEventListener('click', function() {
+    $('import-file').click();
+});
+
+$('import-file').addEventListener('change', nacistZeSouboru);
+            
+            
+// Přidání event listenerů na tlačítka pro přidání řádků
+            $('pridat-zakazku').addEventListener('click', pridatZakazku);
+            $('pridat-hlavni').addEventListener('click', pridatHlavniRadek);
+            
+            // Přidáme event listener pro kontrolu nadpisu zakázky
+            $('zakazka-nadpis').addEventListener('blur', kontrolaNadpisuZakazky);
+            $('zakazka-nadpis').addEventListener('input', function() {
+                if (!this.value.trim()) {
+                    this.value = "";
+                    this.placeholder = "SKLADOVKA";
+                }
+                ulozitDoLocalStorage();
+            });
+            
+            // Přidáme event listenery pro tlačítka export, smazání a tisk
+            $('export-btn').addEventListener('click', function() {
+                $('export-filename').value = '';
+                $('export-dialog').style.display = 'flex';
+            });
+            
+            $('export-cancel').addEventListener('click', function() {
+                $('export-dialog').style.display = 'none';
+            });
+            
+            $('export-confirm').addEventListener('click', ulozitDoSouboru);
+            
+            $('delete-btn').addEventListener('click', vymazatVse);
+            
+            $('print-btn').addEventListener('click', tiskFormulare);
+            
+            // Počáteční výpočet rozdílu "VYROBIT"
+            prepocetVyrobit();
+        });
+        
+        // Funkce pro načtení dat ze souboru
+  function nacistZeSouboru(event) {
+    const soubor = event.target.files[0];
+    if (!soubor) return;
+    
+    // Kontrola přípony souboru
+    if (!soubor.name.toLowerCase().endsWith('.json')) {
+        alert('Prosím, vyberte JSON soubor.');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            
+            // Základní validace dat
+            if (!data || typeof data !== 'object') {
+                throw new Error('Neplatný formát dat');
+            }
+            
+            naplnitData(data);
+            zobrazitStatus('Data byla úspěšně načtena ze souboru.');
+        } catch (error) {
+            console.error('Chyba při načítání souboru:', error);
+            alert('Chyba při načítání dat: ' + error.message);
+            // Případně reset formuláře nebo stavového prvku
+            resetovatFormular();
+        }
+    };
+    
+    reader.onerror = function() {
+        alert('Chyba při čtení souboru.');
+    };
+    
+    reader.readAsText(soubor);
+}
+        
+        tr.innerHTML = `
+    <td><input type="text" maxlength="10" class="zakazka-text" placeholder="Zadejte zakázku" value="${zakazka.text || ''}"></td>
+    <td><input type="number" class="zakazka-hodnota number-input" value="${zakazka.hodnota || 0}" min="0" max="9999999999" oninput="if(this.value.length > 10) this.value = this.value.slice(0, 10)"></td>
+    <td class="no-print"><button class="delete-btn" onclick="smazatZakazku(${zakazkyPocet})">Smazat</button></td>
+`;
+        
+        let dataZmenena = false;
+
+// Přidat do každého event listeneru
+input.addEventListener('input', function() {
+    dataZmenena = true;
+    ulozitDoLocalStorage();
+});
+
+// Přidat varování při opuštění stránky s neuloženými změnami
+window.addEventListener('beforeunload', function(e) {
+    if (dataZmenena) {
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
+    }
+});
+        
+    </script>
+</body>
+</html>
